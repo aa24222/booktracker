@@ -1,0 +1,5 @@
+Django>=4.2
+djangorestframework
+pandas
+requests
+psycopg2-binary
