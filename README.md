@@ -2,8 +2,6 @@
 
 A Django REST API for managing your book collection. Users can add books manually, import from a Goodreads CSV, or search and retrieve books from the Google Books API.  
 
-> Note: Currently backend-only. A full-stack frontend with a cozy pixel-art interface is planned for the future.
-
 ## Features
 
 - **Add books manually**: Type in the books you're currently reading and add them to your shelf.
@@ -20,4 +18,4 @@ A Django REST API for managing your book collection. Users can add books manuall
 ## Future Plans
 
 - Convert book cover images into **pixel art**.
-- Develop a **full-stack frontend** using React for a cozy, interactive bookshelf experience.
+- Develop a **full-stack frontend** using React for an nteractive bookshelf experience.
