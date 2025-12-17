@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userBooks UserBook[]
+}
+
+model Book {
+  id              String     @id @default(cuid())
+  title           String
+  author          String
+  isbn            String?    @unique
+  googleBooksId   String?    @unique
+  description     String?
+  coverImageUrl   String?
+  publishedYear   Int?
+  pageCount       Int?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  userBooks       UserBook[]
+}
+
+model UserBook {
+  id            String    @id @default(cuid())
+  userId        String
+  bookId        String
+  status        ReadingStatus @default(WANT_TO_READ)
+  rating        Int?      // 1-5 stars
+  notes         String?
+  dateStarted   DateTime?
+  dateFinished  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book          Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId]) // A user can only have one entry per book
+}
+
+enum ReadingStatus {
+  WANT_TO_READ
+  CURRENTLY_READING
+  READ
+}
