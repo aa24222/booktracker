@@ -14,45 +14,6 @@ export const bookService = {
     });
   },
 
-  // Get books by status
-
-  async getBookByStatus(userId: string, status: 'WANT_TO_READ' | 'CURRENTLY_READING' | 'READ') {
-    return await prisma.userBook.findMany({
-        where: {
-            userId: userId,
-            status: status
-        },
-        include: {
-            book: true // Include the full book details
-        }
-    });
-  },
-
-  // Get all of a user's books grouped by status
-  async getBooksGroupedByStatus(userId: string) {
-    const wantToRead = await prisma.userBook.findMany({
-        where: { userId, status: 'WANT_TO_READ'},
-        include: {book: true}
-    });
-
-    const currentlyReading = await prisma.userBook.findMany({
-        where: { userId, status: 'CURRENTLY_READING'},
-        include: {book: true}
-    });
-
-    const read = await prisma.userBook.findMany({
-        where: { userId, status: 'READ'},
-        include: {book: true}
-    });
-
-    return {
-      wantToRead,
-      currentlyReading,
-      read
-    };
-
-  },
-
   // Create a new book
   async createBook(data: {
     title: string;
