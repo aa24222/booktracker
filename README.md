@@ -1,6 +1,6 @@
 # BookShelf
 
-A lightweight book tracking application built with Node.js, TypeScript, and PostgreSQL. Think of it as a simpler, more personal alternative to Goodreads - track your reading journey with a clean interface and optional Goodreads data import.
+A lightweight book tracking application built with Node.js, TypeScript, and PostgreSQL. It provides a simple way for users to track their books and build their collection, with an optional Goodreads data import.
 
 ## Features
 
