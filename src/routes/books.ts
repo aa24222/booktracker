@@ -6,7 +6,7 @@ export const bookRouter = express.Router();
 // Google Books API configuration
 const GOOGLE_BOOKS_API = 'https://www.googleapis.com/books/v1/volumes';
 
-// TypeScript interfaces for Google Books API response
+// TypeScript interfaces for Google Books API response!!
 interface IndustryIdentifier {
   type: string;
   identifier: string;
@@ -46,7 +46,7 @@ interface GoogleBooksSingleResponse {
   volumeInfo: VolumeInfo;
 }
 
-// Our standardized book format
+// Standardized book format
 interface Book {
   id: string;
   title: string;
