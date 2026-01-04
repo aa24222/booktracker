@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { bookRouter } from './routes/books';
+import { userBookRouter } from './routes/userBooks';
+
 
 dotenv.config();
 
@@ -21,6 +23,8 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/books', bookRouter);
+app.use('/api/userbooks', userBookRouter);
+
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
