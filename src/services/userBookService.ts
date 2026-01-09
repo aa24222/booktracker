@@ -16,37 +16,67 @@ type UserBookWithBookAndCollections = UserBook & {
 };
 
 export const userBookService = {
-  // Add a book to user's library
-  async addBookToLibrary(
-    userId: string, 
-    bookId: string, 
-    status: 'WANT_TO_READ' | 'CURRENTLY_READING' | 'READ'
-  ): Promise<UserBook> {
-    // Create the UserBook
-    const userBook = await prisma.userBook.create({
+// Add a book to user's library
+async addBookToLibrary(
+  userId: string, 
+  bookData: {
+    id: string;
+    title: string;
+    author: string;
+    isbn: string;
+    description?: string;
+    coverImageUrl?: string;
+    publishedYear?: number;
+    pageCount?: number;
+  },
+  status: 'WANT_TO_READ' | 'CURRENTLY_READING' | 'READ'
+): Promise<UserBook> {
+  // First, check if the book exists in our database
+  let book = await prisma.book.findUnique({
+    where: { id: bookData.id }
+  });
+
+  // If book doesn't exist, create it with the provided data
+  if (!book) {
+    book = await prisma.book.create({
       data: {
-        userId,
-        bookId,
-        status
+        id: bookData.id,
+        title: bookData.title,
+        author: bookData.author,
+        isbn: bookData.isbn,
+        googleBooksId: bookData.id,
+        description: bookData.description || null,
+        coverImageUrl: bookData.coverImageUrl || null,
+        publishedYear: bookData.publishedYear || null,
+        pageCount: bookData.pageCount || null,
       }
     });
+  }
 
-    // Get or create system collection for this status
-    let collection = await collectionService.getSystemCollection(userId, status);
-    
-    if (!collection) {
-      // If system collections don't exist yet, create them
-      await collectionService.createDefaultCollections(userId);
-      collection = await collectionService.getSystemCollection(userId, status);
+  // Now create the UserBook
+  const userBook = await prisma.userBook.create({
+    data: {
+      userId,
+      bookId: book.id,
+      status
     }
+  });
 
-    // Add book to the appropriate system collection
-    if (collection) {
-      await collectionService.addBookToCollection(userBook.id, collection.id);
-    }
+  // Get or create system collection for this status
+  let collection = await collectionService.getSystemCollection(userId, status);
+  
+  if (!collection) {
+    await collectionService.createDefaultCollections(userId);
+    collection = await collectionService.getSystemCollection(userId, status);
+  }
 
-    return userBook;
-  },
+  // Add book to the appropriate system collection
+  if (collection) {
+    await collectionService.addBookToCollection(userBook.id, collection.id);
+  }
+
+  return userBook;
+},
 
   // Update book status (and move between system collections only)
   async updateBookStatus(

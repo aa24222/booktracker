@@ -3,15 +3,23 @@ import { userBookService } from '../services/userBookService';
 
 export const userBookRouter = express.Router();
 
+
 // Add a book to user's library
 userBookRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { userId, bookId, status } = req.body;
+    const { userId, book, status } = req.body;
 
     // Validate required fields
-    if (!userId || !bookId || !status) {
+    if (!userId || !book || !status) {
       return res.status(400).json({ 
-        error: 'Missing required fields: userId, bookId, status' 
+        error: 'Missing required fields: userId, book, status' 
+      });
+    }
+
+    // Validate mandatory book fields
+    if (!book.id || !book.title || !book.author || !book.isbn) {
+      return res.status(400).json({
+        error: 'Book must have: id, title, author, isbn'
       });
     }
 
@@ -23,18 +31,17 @@ userBookRouter.post('/', async (req: Request, res: Response) => {
       });
     }
 
-    const userBook = await userBookService.addBookToLibrary(userId, bookId, status);
+    const userBook = await userBookService.addBookToLibrary(userId, book, status);
     
     res.status(201).json(userBook);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error adding book to library:', error);
     res.status(500).json({ 
       error: 'Failed to add book to library',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error?.message || 'Unknown error'
     });
   }
 });
-
 // Get all books for a user (with optional status filter)
 userBookRouter.get('/user/:userId', async (req: Request, res: Response) => {
   try {

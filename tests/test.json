@@ -1,0 +1,10 @@
+{
+  "userId": "user1",
+  "book": {
+    "id": "pD6arNyKyi8C",
+    "title": "The Hobbit",
+    "author": "J.R.R. Tolkien",
+    "isbn": "9780544115552"
+  },
+  "status": "WANT_TO_READ"
+}
