@@ -24,7 +24,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API Routes
 app.use('/api/books', bookRouter);
 app.use('/api/userbooks', userBookRouter);
-app.use('/api/collections', collectionRouter); // ← ADD THIS
+app.use('/api/collections', collectionRouter); 
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
