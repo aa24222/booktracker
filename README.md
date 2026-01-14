@@ -25,21 +25,6 @@ A lightweight book tracking application built with Node.js, TypeScript, and Post
 * **Dev Server**: Nodemon with ts-node
 * **Database UI**: Prisma Studio
 
-## Project Structure
-```
-booktracker/
-├── src/
-│   ├── routes/          # API route definitions
-│   ├── controllers/     # Request handlers
-│   ├── services/        # Business logic & database operations
-│   ├── lib/            # Prisma client & utilities
-│   └── index.ts        # Express app entry point
-├── prisma/
-│   └── schema.prisma   # Database schema
-└── scripts/
-    └── process_goodreads.py  # CSV import processor
-```
-
 ## Getting Started
 
 ### Prerequisites
