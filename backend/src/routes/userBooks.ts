@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { userBookService } from '../services/userBookService';
+import { collectionController } from '../controllers/collectionController';
 
 export const userBookRouter = express.Router();
 
