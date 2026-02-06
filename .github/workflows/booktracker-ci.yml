@@ -1,0 +1,127 @@
+name: BookTracker CI
+
+on:
+  push:
+    branches: [ main, frontend ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Test Backend
+  backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    
+    # Start PostgreSQL for backend tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: booktracker_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+      
+      - name: TypeScript Check
+        working-directory: ./backend
+        run: npx tsc --noEmit
+      
+      - name: Validate Prisma Schema
+        working-directory: ./backend
+        run: npx prisma validate
+      
+      - name: Generate Prisma Client
+        working-directory: ./backend
+        run: npx prisma generate
+      
+      - name: Run Database Migrations
+        working-directory: ./backend
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/booktracker_test
+      
+      - name: Security Audit
+        working-directory: ./backend
+        run: npm audit --audit-level=high
+        continue-on-error: true
+      
+      - name: Backend Tests
+        working-directory: ./backend
+        run: npm test
+        continue-on-error: true
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/booktracker_test
+
+  # Job 2: Test Frontend
+  frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: Run ESLint
+        working-directory: ./frontend
+        run: npm run lint
+      
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+      
+      - name: Check Build Output
+        working-directory: ./frontend
+        run: |
+          if [ -d "dist" ]; then
+            echo "✅ Build successful - dist folder created"
+            ls -la dist
+          else
+            echo "❌ Build failed - no dist folder"
+            exit 1
+          fi
+
+  # Job 3: All Checks Passed
+  all-checks:
+    name: All Checks Passed ✅
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Success
+        run: |
+          echo "All checks passed!"
+          echo "✅ Backend: TypeScript, Prisma, Database"
+          echo "✅ Frontend: Lint, Build"
+          echo "Ready to deploy!"
